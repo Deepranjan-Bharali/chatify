@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        unique: true,
         minlength: 6
     },
     profilePic: {
@@ -21,7 +20,7 @@ const userSchema = new mongoose.Schema({
         default: ""
     }
 },
- {timestamps: true}
+    { timestamps: true }
 );
 
 const user = mongoose.model("User", userSchema);
