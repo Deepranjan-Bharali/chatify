@@ -2,7 +2,7 @@ import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.js"
 import bcrypt from "bcryptjs";
-import {ENV} from "../lib/env.js";
+import { ENV } from "../lib/env.js";
 import cloudinary from "../lib/cloudinary.js";
 
 
@@ -47,34 +47,34 @@ export const signup = async (req, res) => {
                 console.error("Error sending welcome email:", error);
             }
 
-            res.status(201).json({
+            return res.status(201).json({
                 _id: savedUser._id,
                 fullName: savedUser.fullName,
                 email: savedUser.email,
                 profilePic: savedUser.profilePic
             });
         } else {
-            res.status(400).json({ message: "Invalid user data" });
+            return res.status(400).json({ message: "Invalid user data" });
         }
     } catch (error) {
         console.error("Error in signup controller:", error);
         console.log("Error in signup controller:", error.message);
-        res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: "Server error" });
     }
 };
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
-    if(!email || !password){
+    if (!email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
-    try{
+    try {
         const user = await User.findOne({ email });
-        if(!user){
+        if (!user) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
         const isPaasswordCorrect = await bcrypt.compare(password, user.password);
-        if(!isPaasswordCorrect){
+        if (!isPaasswordCorrect) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
         generateToken(user._id, res);
@@ -84,22 +84,22 @@ export const login = async (req, res) => {
             email: user.email,
             profilePic: user.profilePic
         });
-    }catch(error){
+    } catch (error) {
         console.error("Error in login controller:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
 
-export const logout =  (req, res) => {
-    
-    res.clearCookie("jwt","",{maxAge:0} );
+export const logout = (req, res) => {
+
+    res.clearCookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
 };
 
 export const updateProfile = async (req, res) => {
-    try{
-        const {profilePic} = req.body;
-        if(!profilePic){
+    try {
+        const { profilePic } = req.body;
+        if (!profilePic) {
             return res.status(400).json({ message: "Profile picture is required" });
         }
         const userId = req.user._id;
@@ -114,5 +114,5 @@ export const updateProfile = async (req, res) => {
     } catch (error) {
         console.error("Error in updateProfile controller:", error);
         res.status(500).json({ message: "Server error" });
-    }   
+    }
 }
