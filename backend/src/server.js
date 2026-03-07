@@ -1,17 +1,19 @@
 import express from 'express';
-import {ENV} from './lib/env.js';
+import { ENV } from './lib/env.js';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './lib/db.js';
+import cors from 'cors';
 
 import authRoutes from './routes/auth.route.js';
 import messageRoutes from './routes/message.route.js';
-   
+
 const app = express();
 const __dirname = path.resolve();
 const PORT = ENV.PORT || 3000;
 
 app.use(express.json()); //req.body
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true })); // allow cross-origin requests from the frontend
 app.use(cookieParser()); //req.cookies
 
 app.use("/api/auth", authRoutes);
